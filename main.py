@@ -1,6 +1,7 @@
 ﻿# -*- coding:utf-8 -*-
-import Word
 import os
+import Word
+import Quiz
 
 
 def ask_source():
@@ -20,6 +21,7 @@ if __name__ == "__main__":
     with open(file, encoding="utf-8") as f:
         for line in f:
             item = line.split(';')
+            # remove \n
             item = item[:-1]
             if len(item) <= 1:
                 if item[0] == '##NOUNS':
@@ -38,3 +40,8 @@ if __name__ == "__main__":
     for i in obj:
         print(i.word)
 
+    quiz = input("Start quiz? (y/n) \n")
+    if quiz == 'y':
+        Quiz.compose_quiz(obj)
+    else:
+        quit()
