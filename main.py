@@ -42,6 +42,6 @@ if __name__ == "__main__":
 
     quiz = input("Start quiz? (y/n) \n")
     if quiz == 'y':
-        Quiz.compose_quiz(obj)
+        Quiz.compose_quiz(obj, 3)
     else:
         quit()
