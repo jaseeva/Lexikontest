@@ -2,6 +2,7 @@
 import os
 import Word
 import Quiz
+import iocsv
 
 
 def ask_source():
@@ -39,6 +40,9 @@ if __name__ == "__main__":
                     continue
     for i in obj:
         print(i.word)
+
+    filePath = '../dict.csv'
+    iocsv.save_dict(obj, filePath)
 
     quiz = input("Start quiz? (y/n) \n")
     if quiz == 'y':

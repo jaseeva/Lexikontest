@@ -2,7 +2,7 @@ import Word
 
 
 def save_dict(words, path):
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         allnouns = []
         allverbs = []
         # create formatted string for each word
