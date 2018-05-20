@@ -5,6 +5,9 @@ import Quiz
 import iocsv
 
 
+activeWords = []
+
+
 def ask_source():
     while True:
         path = input("Select file with words >> ")
@@ -15,37 +18,34 @@ def ask_source():
             continue
 
 
+def load_dict(file):
+    # if dictionary file already exists
+    if os.path.exists(file):
+        global activeWords
+        activeWords = iocsv.parse_words(file)
+    return activeWords
+
+
 if __name__ == "__main__":
-    file = ask_source()
-    mode = ''
-    obj = []
-    with open(file, encoding="utf-8") as f:
-        for line in f:
-            item = line.split(';')
-            # remove \n
-            item = item[:-1]
-            if len(item) <= 1:
-                if item[0] == '##NOUNS':
-                    mode = 'n'
-                elif item[0] == '##VERBS':
-                    mode = 'v'
-                else:
-                    continue
-            else:
-                if mode == 'n':
-                    obj.append(Word.Noun(item[0], item[1], item[2], item[3]))
-                elif mode == 'v':
-                    obj.append(Word.Verb(item[0], item[1], item[2]))
-                else:
-                    continue
-    for i in obj:
-        print(i.word)
+    # check if the dictionary exists and load words from it
+    activeWords = load_dict('../dict.csv')
+    if len(activeWords) == 0:
+        newWords = ask_source()
+        activeWords = activeWords + iocsv.parse_words(newWords)
 
-    filePath = '../dict.csv'
-    iocsv.save_dict(obj, filePath)
-
-    quiz = input("Start quiz? (y/n) \n")
-    if quiz == 'y':
-        Quiz.compose_quiz(obj, 3)
-    else:
-        quit()
+    while True:
+        print("Type 'add' to upload new words or 'quiz' for a quick test. Press 'qq' to quit.")
+        navigation = input('>> ')
+        if navigation == 'add':
+            addedWords = ask_source()
+            # TODO: make sure that words are not added if they already exist in dictionary
+            activeWords = activeWords + iocsv.parse_words(addedWords)
+        elif navigation == 'quiz':
+            Quiz.compose_quiz(activeWords, 3)
+        elif navigation == 'qq':
+            filePath = '../dict.csv'
+            # TODO: make sure that user data is not lost if new file was saved incorrectly
+            iocsv.save_dict(activeWords, filePath)
+            quit()
+        else:
+            continue

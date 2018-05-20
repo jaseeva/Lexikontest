@@ -30,3 +30,26 @@ def save_dict(words, path):
             content += i + '\n'
 
         f.write(content + '\n')
+
+
+def parse_words(path):
+    words = []
+    mode = ''
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            item = line.split(';')
+            if len(item) <= 2:
+                if item[0] == '##NOUNS':
+                    mode = 'n'
+                elif item[0] == '##VERBS':
+                    mode = 'v'
+                else:
+                    continue
+            else:
+                if mode == 'n':
+                    words.append(Word.Noun(item[0], item[1], item[2], item[3]))
+                elif mode == 'v':
+                    words.append(Word.Verb(item[0], item[1], item[2]))
+                else:
+                    continue
+    return words
