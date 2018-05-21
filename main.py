@@ -32,6 +32,7 @@ if __name__ == "__main__":
     if len(activeWords) == 0:
         newWords = ask_source()
         activeWords = activeWords + iocsv.parse_words(newWords)
+        activeWords = list(set(activeWords))
 
     while True:
         print("Type 'add' to upload new words or 'quiz' for a quick test. Press 'qq' to quit.")
@@ -40,6 +41,7 @@ if __name__ == "__main__":
             addedWords = ask_source()
             # TODO: make sure that words are not added if they already exist in dictionary
             activeWords = activeWords + iocsv.parse_words(addedWords)
+            activeWords = list(set(activeWords))
         elif navigation == 'quiz':
             Quiz.compose_quiz(activeWords, 3)
         elif navigation == 'qq':
