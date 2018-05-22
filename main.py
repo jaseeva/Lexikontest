@@ -1,7 +1,12 @@
 ﻿# -*- coding:utf-8 -*-
 import os
-import Word
+import time
 import Quiz
+import iocsv
+
+
+dataDirectory = r"D:\GitProjects\dicts"
+activeWords = []
 
 
 def ask_source():
@@ -14,34 +19,68 @@ def ask_source():
             continue
 
 
-if __name__ == "__main__":
-    file = ask_source()
-    mode = ''
-    obj = []
-    with open(file, encoding="utf-8") as f:
-        for line in f:
-            item = line.split(';')
-            # remove \n
-            item = item[:-1]
-            if len(item) <= 1:
-                if item[0] == '##NOUNS':
-                    mode = 'n'
-                elif item[0] == '##VERBS':
-                    mode = 'v'
-                else:
-                    continue
-            else:
-                if mode == 'n':
-                    obj.append(Word.Noun(item[0], item[1], item[2], item[3]))
-                elif mode == 'v':
-                    obj.append(Word.Verb(item[0], item[1], item[2]))
-                else:
-                    continue
-    for i in obj:
-        print(i.word)
+def load_dict():
+    # if dictionary file already exists
+    if len(os.listdir(dataDirectory)) > 0:
+        file = os.listdir(dataDirectory)[-1]
+        if os.path.splitext(file)[1].lower() == '.csv':
+            fullPath = dataDirectory + '\\' + file
+            if os.path.exists(fullPath):
+                global activeWords
+                activeWords, fileVal = iocsv.parse_dict(fullPath)
 
-    quiz = input("Start quiz? (y/n) \n")
-    if quiz == 'y':
-        Quiz.compose_quiz(obj, 3)
+                # if the last saved dictionary file is not valid
+                if not fileVal:
+                    # check previous dict file
+                    fullPathOlder = dataDirectory + '\\' + os.listdir(dataDirectory)[-2]
+                    olderWords, olderFileVal = iocsv.parse_dict(fullPathOlder)
+                    if olderFileVal:
+                        activeWords = olderWords
+                    # if both files not valid, pick the bigger(or newer) one
+                    else:
+                        newerSize = os.path.getsize(fullPath)
+                        olderSize = os.path.getsize(fullPathOlder)
+                        if newerSize < olderSize:
+                            activeWords = olderWords
+                        else:
+                            return activeWords
+    return activeWords
+
+
+if __name__ == "__main__":
+    # check if the dictionary exists and load words from it
+    activeWords = load_dict()
+    if len(activeWords) == 0:
+        newWords = ask_source()
+        activeWords = activeWords + iocsv.parse_new_words(newWords)
+        activeWords = list(set(activeWords))
+        print('New words added.' + '\n')
     else:
-        quit()
+        print('Dictionary loaded.' + '\n')
+
+    while True:
+        print("Type 'add' to upload new words or 'quiz' for a quick test. Press 'qq' to quit.")
+        navigation = input('>> ')
+        if navigation == 'add':
+            addedWords = ask_source()
+            # TODO: make sure that words are not added if they already exist in dictionary
+            activeWords = activeWords + iocsv.parse_new_words(addedWords)
+            activeWords = list(set(activeWords))
+            print('New words added.' + '\n')
+        elif navigation == 'quiz':
+            Quiz.compose_quiz(activeWords, 3)
+        elif navigation == 'qq':
+            ts = str(time.time()).split('.')[0]
+            filePath = '../dicts/' + 'dict' + ts + '.csv'
+            # TODO: make sure that user data is not lost if new file was saved incorrectly
+            iocsv.save_dict(activeWords, filePath)
+            # remove old dict files so only 2 latest files stay
+            filesList = os.listdir('../dicts/')
+            if len(filesList) > 2:
+                oldFiles = filesList[:-2]
+                for i in oldFiles:
+                    p = dataDirectory + '\\' + i
+                    os.remove(p)
+            quit()
+        else:
+            continue

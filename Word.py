@@ -3,6 +3,12 @@ class Word(object):
         self.word = word
         self.translation = translation
 
+    def __eq__(self, other):
+        return self.word == other.word and self.translation == other.translation
+
+    def __hash__(self):
+        return hash(('word', self.word, 'translation', self.translation))
+
 
 class Noun(Word):
     def __init__(self, word, translation, article, plural):
