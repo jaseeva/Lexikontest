@@ -2,6 +2,7 @@ import Word
 
 
 def save_dict(words, path):
+    check = len(words)
     with open(path, 'w', encoding='utf-8') as f:
         allnouns = []
         allverbs = []
@@ -29,12 +30,47 @@ def save_dict(words, path):
         for i in allverbs:
             content += i + '\n'
 
-        f.write(content + '\n')
+        checksum = '##END;' + str(check)
+
+        try:
+            f.write(content + '\n' + checksum)
+        except IOError as e:
+            print("Writing to file failed (%s)." % e)
 
 
-def parse_words(path):
+def parse_dict(path):
     words = []
     mode = ''
+    valid = False
+
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            item = line.split(';')
+            if len(item) <= 2:
+                if item[0] == '##NOUNS':
+                    mode = 'n'
+                elif item[0] == '##VERBS':
+                    mode = 'v'
+                elif item[0] == '##END':
+                    if int(item[1]) == len(words):
+                        valid = True
+                        break
+                else:
+                    continue
+            else:
+                if mode == 'n':
+                    words.append(Word.Noun(item[0], item[1], item[2], item[3]))
+                elif mode == 'v':
+                    words.append(Word.Verb(item[0], item[1], item[2]))
+                else:
+                    continue
+    return words, valid
+
+
+def parse_new_words(path):
+    words = []
+    mode = ''
+
     with open(path, encoding="utf-8") as f:
         for line in f:
             item = line.split(';')
