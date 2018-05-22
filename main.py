@@ -1,11 +1,11 @@
 ﻿# -*- coding:utf-8 -*-
 import os
 import time
-import Word
 import Quiz
 import iocsv
 
 
+dataDirectory = r"D:\GitProjects\dicts"
 activeWords = []
 
 
@@ -21,11 +21,10 @@ def ask_source():
 
 def load_dict():
     # if dictionary file already exists
-    directory = r"D:\GitProjects\dicts"
-    if len(os.listdir(directory)) > 0:
-        file = os.listdir(directory)[-1]
+    if len(os.listdir(dataDirectory)) > 0:
+        file = os.listdir(dataDirectory)[-1]
         if os.path.splitext(file)[1].lower() == '.csv':
-            fullPath = directory + '\\' + file
+            fullPath = dataDirectory + '\\' + file
             if os.path.exists(fullPath):
                 global activeWords
                 activeWords, fileVal = iocsv.parse_dict(fullPath)
@@ -33,7 +32,7 @@ def load_dict():
                 # if the last saved dictionary file is not valid
                 if not fileVal:
                     # check previous dict file
-                    fullPathOlder = directory + '\\' + os.listdir(directory)[-2]
+                    fullPathOlder = dataDirectory + '\\' + os.listdir(dataDirectory)[-2]
                     olderWords, olderFileVal = iocsv.parse_dict(fullPathOlder)
                     if olderFileVal:
                         activeWords = olderWords
@@ -75,6 +74,13 @@ if __name__ == "__main__":
             filePath = '../dicts/' + 'dict' + ts + '.csv'
             # TODO: make sure that user data is not lost if new file was saved incorrectly
             iocsv.save_dict(activeWords, filePath)
+            # remove old dict files so only 2 latest files stay
+            filesList = os.listdir('../dicts/')
+            if len(filesList) > 2:
+                oldFiles = filesList[:-2]
+                for i in oldFiles:
+                    p = dataDirectory + '\\' + i
+                    os.remove(p)
             quit()
         else:
             continue
