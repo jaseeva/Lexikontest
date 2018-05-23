@@ -3,9 +3,11 @@ import Word
 
 def save_dict(words, path):
     check = len(words)
+
     with open(path, 'w', encoding='utf-8') as f:
         allnouns = []
         allverbs = []
+
         # create formatted string for each word
         for i in words:
             content = ''
@@ -14,12 +16,16 @@ def save_dict(words, path):
                 content += i.translation + ';'
                 content += i.article + ';'
                 content += i.plural + ';'
+                content += str(i.learn_rate) + ';'
                 allnouns.append(content)
+
             elif type(i) is Word.Verb:
                 content += i.word + ';'
                 content += i.translation + ';'
                 content += i.perfect + ';'
+                content += str(i.learn_rate) + ';'
                 allverbs.append(content)
+
         # add dividers and write words
         content = ''
         content += '##NOUNS;' + '\n'
@@ -59,9 +65,9 @@ def parse_dict(path):
                     continue
             else:
                 if mode == 'n':
-                    words.append(Word.Noun(item[0], item[1], item[2], item[3]))
+                    words.append(Word.Noun(item[0], item[1], item[2], item[3], int(item[4])))
                 elif mode == 'v':
-                    words.append(Word.Verb(item[0], item[1], item[2]))
+                    words.append(Word.Verb(item[0], item[1], item[2], int(item[3])))
                 else:
                     continue
     return words, valid
@@ -83,9 +89,9 @@ def parse_new_words(path):
                     continue
             else:
                 if mode == 'n':
-                    words.append(Word.Noun(item[0], item[1], item[2], item[3]))
+                    words.append(Word.Noun(item[0], item[1], item[2], item[3], 0))
                 elif mode == 'v':
-                    words.append(Word.Verb(item[0], item[1], item[2]))
+                    words.append(Word.Verb(item[0], item[1], item[2], 0))
                 else:
                     continue
     return words

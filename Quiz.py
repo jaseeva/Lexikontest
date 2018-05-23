@@ -15,13 +15,16 @@ def select_words(words, amount):
 def compose_quiz(words, amount):
     # counter for correct answers
     correct = 0
+
     # select random unique words
     indexes = select_words(words, amount)
+
     for i in indexes:
         w = words[i]
         print(w.word + '\n')
         answer = input("answer: ")
         if answer == w.translation:
             correct += 1
+            w.learn_rate += 1
     # TODO: show which words were correct
     print("Result: " + str(correct) + '/' + str(amount))

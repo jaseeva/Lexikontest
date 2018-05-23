@@ -36,6 +36,7 @@ def load_dict():
                     olderWords, olderFileVal = iocsv.parse_dict(fullPathOlder)
                     if olderFileVal:
                         activeWords = olderWords
+
                     # if both files not valid, pick the bigger(or newer) one
                     else:
                         newerSize = os.path.getsize(fullPath)
@@ -61,19 +62,21 @@ if __name__ == "__main__":
     while True:
         print("Type 'add' to upload new words or 'quiz' for a quick test. Press 'qq' to quit.")
         navigation = input('>> ')
+
         if navigation == 'add':
             addedWords = ask_source()
-            # TODO: make sure that words are not added if they already exist in dictionary
             activeWords = activeWords + iocsv.parse_new_words(addedWords)
             activeWords = list(set(activeWords))
             print('New words added.' + '\n')
+
         elif navigation == 'quiz':
             Quiz.compose_quiz(activeWords, 3)
+
         elif navigation == 'qq':
             ts = str(time.time()).split('.')[0]
             filePath = '../dicts/' + 'dict' + ts + '.csv'
-            # TODO: make sure that user data is not lost if new file was saved incorrectly
             iocsv.save_dict(activeWords, filePath)
+
             # remove old dict files so only 2 latest files stay
             filesList = os.listdir('../dicts/')
             if len(filesList) > 2:
