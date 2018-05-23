@@ -23,8 +23,10 @@ def load_dict():
     # if dictionary file already exists
     if len(os.listdir(dataDirectory)) > 0:
         file = os.listdir(dataDirectory)[-1]
+
         if os.path.splitext(file)[1].lower() == '.csv':
             fullPath = dataDirectory + '\\' + file
+
             if os.path.exists(fullPath):
                 global activeWords
                 activeWords, fileVal = iocsv.parse_dict(fullPath)
