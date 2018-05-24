@@ -72,7 +72,15 @@ if __name__ == "__main__":
             print('New words added.' + '\n')
 
         elif navigation == 'quiz':
-            Quiz.compose_quiz(activeWords, 3)
+            print('Select quiz type: regular or reverse:')
+            choice = input('>> ')
+
+            if choice == 'regular':
+                Quiz.compose_quiz(activeWords, 3, 'w')
+            elif choice == 'reverse':
+                Quiz.compose_quiz(activeWords, 3, 't')
+            else:
+                continue
 
         elif navigation == 'qq':
             ts = str(time.time()).split('.')[0]
