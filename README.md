@@ -7,9 +7,10 @@ Functionality:
 - store dictionary with added words as csv file
 - management of dictionary files in case of invalid data
 - user can add new words or practice what he added before
+- show correct answers for wrong words in quiz results
+- words have counter for how often they are answered correctly. Words for quiz are selected based on this parameter.
+- reverse quiz type: user sees translation and should write original word (with article in case of Noun)
 
-Planned features:
-- [ ] show (in)correct answers in quiz results
-- [ ] add new parameter to words - how often they are answered correctly. select words for quiz based on this parameter.
-- [ ] add new quiz types: for noun article and verb perfect form
+Planned:
 - [ ] add GUI
+- [ ] make web version
