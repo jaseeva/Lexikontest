@@ -3,58 +3,19 @@ import os
 import time
 import Quiz
 import iocsv
+from check_source import *
+from load_dict import *
 
 
 dataDirectory = r"D:\GitProjects\dicts"
 activeWords = []
 
 
-def ask_source():
-    while True:
-        path = input("Select file with words >> ")
-        if os.path.exists(path):
-            return path
-        else:
-            print("Wrong path, please try again.")
-            continue
-
-
-def load_dict():
-    # if dictionary file already exists
-    if len(os.listdir(dataDirectory)) > 0:
-        file = os.listdir(dataDirectory)[-1]
-
-        if os.path.splitext(file)[1].lower() == '.csv':
-            fullPath = dataDirectory + '\\' + file
-
-            if os.path.exists(fullPath):
-                global activeWords
-                activeWords, fileVal = iocsv.parse_dict(fullPath)
-
-                # if the last saved dictionary file is not valid
-                if not fileVal:
-                    # check previous dict file
-                    fullPathOlder = dataDirectory + '\\' + os.listdir(dataDirectory)[-2]
-                    olderWords, olderFileVal = iocsv.parse_dict(fullPathOlder)
-                    if olderFileVal:
-                        activeWords = olderWords
-
-                    # if both files not valid, pick the bigger(or newer) one
-                    else:
-                        newerSize = os.path.getsize(fullPath)
-                        olderSize = os.path.getsize(fullPathOlder)
-                        if newerSize < olderSize:
-                            activeWords = olderWords
-                        else:
-                            return activeWords
-    return activeWords
-
-
 if __name__ == "__main__":
     # check if the dictionary exists and load words from it
-    activeWords = load_dict()
+    activeWords = load_dict(dataDirectory)
     if len(activeWords) == 0:
-        newWords = ask_source()
+        newWords = check_source()
         activeWords = activeWords + iocsv.parse_new_words(newWords)
         activeWords = list(set(activeWords))
         print('New words added.' + '\n')
@@ -66,7 +27,7 @@ if __name__ == "__main__":
         navigation = input('>> ')
 
         if navigation == 'add':
-            addedWords = ask_source()
+            addedWords = check_source()
             activeWords = activeWords + iocsv.parse_new_words(addedWords)
             activeWords = list(set(activeWords))
             print('New words added.' + '\n')
