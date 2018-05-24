@@ -1,18 +1,6 @@
 from random import randint
 
 
-def count_median(words):
-    rates = []
-
-    for w in words:
-        rates.append(w.learn_rate)
-    rates.sort()
-
-    median = rates[int(len(rates)/2)]
-    print(median)
-    return median
-
-
 def select_words(words, amount):
     selected = []
 
@@ -26,22 +14,44 @@ def select_words(words, amount):
     return selected
 
 
-def compose_quiz(words, amount):
-    # counter for correct answers
-    correct = 0
+def show_correct(words, wrongs):
+    for key, value in wrongs.items():
+        print(key + ' -- ' + value)
 
-    # sort list of words by word rate
-    words.sort(key=lambda x: x.learn_rate, reverse=True)
+        correct = ''
 
-    # select random unique words below the median rate
-    indexes = select_words(words, amount)
+        # find correct translation
+        for w in words:
+            if w.word == key:
+                correct = w.translation
+        print("Correct answer: " + correct + '\n')
+
+
+def quiz_run(words, indexes):
+    correctPoints = 0
+    wrongWords = {}
 
     for i in indexes:
         w = words[i]
         print(w.word + '\n')
         answer = input("answer: ")
         if answer == w.translation:
-            correct += 1
+            correctPoints += 1
             w.learn_rate += 1
-    # TODO: show which words were correct
-    print("Result: " + str(correct) + '/' + str(amount))
+        else:
+            wrongWords.update({w.word: answer})
+
+    print("Result: " + str(correctPoints) + '/' + str(len(indexes)) + '\n')
+
+    if len(wrongWords) > 0:
+        show_correct(words, wrongWords)
+
+
+def compose_quiz(words, amount):
+    # sort list of words by word rate
+    words.sort(key=lambda x: x.learn_rate, reverse=True)
+
+    # select random unique words below the median rate
+    indexes = select_words(words, amount)
+
+    quiz_run(words, indexes)
