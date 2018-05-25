@@ -3,6 +3,8 @@ import iocsv
 
 
 def load_dict(dataDirectory):
+    activeWords = []
+
     # if dictionary file already exists
     if len(os.listdir(dataDirectory)) > 0:
         file = os.listdir(dataDirectory)[-1]
@@ -11,7 +13,6 @@ def load_dict(dataDirectory):
             fullPath = dataDirectory + '\\' + file
 
             if os.path.exists(fullPath):
-                global activeWords
                 activeWords, fileVal = iocsv.parse_dict(fullPath)
 
                 # if the last saved dictionary file is not valid
